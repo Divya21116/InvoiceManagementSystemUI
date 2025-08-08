@@ -97,7 +97,7 @@ const InvoiceSystem = () => {
     // Items
     items: [{
       slNo: 1,
-      hsnCode: '500089',
+      hsnCode: '94056090',
       description: '',
      
       width: '',
@@ -136,19 +136,35 @@ const InvoiceSystem = () => {
   const currentDocType = documentTypes[activeTab].value;
 
   // Calculate item totals
-  const calculateItemTotals = (item) => {
-    const width = parseFloat(item.width) || 0;
-    const height = parseFloat(item.height) || 0;
-    const qty = parseFloat(item.qty) || 0;
-    const rate = parseFloat(item.rate) || 0;
+ const calculateItemTotals = (item) => {
+  const width = parseFloat(item.width) || 0;
+  const height = parseFloat(item.height) || 0;
+  const qty = parseFloat(item.qty) || 0;
+  const rate = parseFloat(item.rate) || 0;
+  const manualSft = parseFloat(item.sft) || 0;
+  
+  let sft, amount;
+  
+  // Check if SFT is manually entered
+  if (manualSft > 0) {
+    // If SFT is manually entered, use it directly
+    sft = manualSft;
+    amount = sft * qty * rate;
+  } else {
+    // If no manual SFT, calculate from width/height or use qty*rate
     
-    const sft = width * height;
-    const amount = sft * qty * rate;
-    const cgstSgstAmount = (amount * parseFloat(item.cgstSgstRate || 0)) / 100;
-    const total = amount + cgstSgstAmount;
+      // No dimensions provided, use qty * rate only
+      sft = 0;
+      amount = qty * rate;
     
-    return { sft, amount, cgstSgstAmount, total };
-  };
+  }
+  
+  const cgstSgstAmount = (amount * parseFloat(item.cgstSgstRate || 0)) / 100;
+  const total = amount + cgstSgstAmount;
+  
+  return { sft, amount, cgstSgstAmount, total };
+};
+
 
   // Update item
   const updateItem = (index, field, value) => {
@@ -600,7 +616,13 @@ useEffect(() => {
                           <>
                            
                             <TableCell>
-                              <Typography variant="body2">{item.sft.toFixed(2)}</Typography>
+                             <TextField
+                                size="small"
+                                type="number"
+                                value={item.sft}
+                                onChange={(e) => updateItem(index, 'sft', e.target.value)}
+                                sx={{ width: 100 }}
+                              />
                             </TableCell>
                             <TableCell>
                               <TextField
@@ -824,21 +846,15 @@ useEffect(() => {
       >
      <DialogContent
   ref={printRef}
-  sx={{
-    p: 3,
+   sx={{
+    p: 1, // Reduced padding
     '@media print': {
-      transform: 'scale(0.95)',      // shrink the whole invoice
+      p: 0,
+      m: 0,
+      transform: 'scale(0.98)', // Better scaling
       transformOrigin: 'top left',
       width: '100%',
-      tableLayout: 'fixed',
-    },
-    '& table': {
-      '@media print': {
-        width: '100% !important',
-        tableLayout: 'fixed',
-        fontSize: '0.1rem',
-        wordWrap: 'break-word'
-      }
+      maxWidth: 'none',
     }
   }}
 >
@@ -958,103 +974,142 @@ useEffect(() => {
             </Grid>
 
             {/* Items Table */}
-            <TableContainer sx={{ mb: 2 }}>
-              <Table size="small" sx={{ border: '1px solid black' }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ border: '1px solid black',  width: '30px'  }}>Sl. No.</TableCell>
-                    {currentDocType !== 'challan' && (
-                      <TableCell sx={{ border: '1px solid black', }}>HSN CODE</TableCell>
-                    )}
-                    <TableCell sx={{ border: '1px solid black',  }}>Description</TableCell>
-                    <TableCell sx={{ border: '1px solid black', width: '10px'}}>W</TableCell>
-                        <TableCell sx={{ border: '1px solid black', width: '10px' }}>H</TableCell>
-                        <TableCell sx={{ border: '1px solid black', width: '30px' }}>Qty</TableCell>
-                    {currentDocType !== 'challan' && (
-                      <>
-                       
-                        <TableCell sx={{ border: '1px solid black',width: '30px'  }}>Sft</TableCell>
-                        <TableCell sx={{ border: '1px solid black',width: '40px'  }}>Rate</TableCell>
-                        <TableCell sx={{ border: '1px solid black',  }}>Amount</TableCell>
-                      </>
-                    )}
-                   
-                    {(currentDocType === 'invoice' || currentDocType === 'estimation') && (
-                        <>
-                      <TableCell sx={{ border: '1px solid black', }}>CGST+SGST 18%</TableCell>
-                      <TableCell sx={{ border: '1px solid black', }}>TOTAL</TableCell>
-                      </>
-                    )}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {formData.items.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell sx={{ border: '1px solid black' }}>{item.slNo}</TableCell>
-                      {currentDocType !== 'challan' && (
-                        <TableCell sx={{ border: '1px solid black' }}>{item.hsnCode}</TableCell>
-                      )}
-                      <TableCell sx={{ border: '1px solid black' }}>{item.description}</TableCell>
-                        <TableCell sx={{ border: '1px solid black' }}>{item.width}</TableCell>
-                          <TableCell sx={{ border: '1px solid black' }}>{item.height}</TableCell>
-                          <TableCell sx={{ border: '1px solid black' }}>{item.qty}</TableCell>
-                      {currentDocType !== 'challan' && (
-                        <>
-                       
-                          <TableCell sx={{ border: '1px solid black' }}>{item.sft.toFixed(2)}</TableCell>
-                          <TableCell sx={{ border: '1px solid black' }}>{item.rate}</TableCell>
-                          <TableCell sx={{ border: '1px solid black' }}>{item.amount.toFixed(2)}</TableCell>
-                        </>
-                      )}
-                      
-                      {(currentDocType === 'invoice' || currentDocType === 'estimation') && (
-                        <>
-                        <TableCell sx={{ border: '1px solid black', fontWeight: 'bold' }}>
-                          {item.cgstSgstAmount.toFixed(2)}
-                        </TableCell>
-                         <TableCell sx={{ border: '1px solid black', fontWeight: 'bold' }}>
-                         {item.total.toFixed(2)}
-                        </TableCell>
-                        </>
-                      )}
-                    </TableRow>
-                  ))}
-                  
-                  {/* Transport expenses row for invoice/estimation */}
-                  {currentDocType !== 'challan' && formData.transportExpenses > 0 && (
-                    <TableRow>
-                      <TableCell sx={{ border: '1px solid black' }}></TableCell>
-                      {currentDocType !== 'challan' && (
-                        <TableCell sx={{ border: '1px solid black' }}></TableCell>
-                      )}
-                      <TableCell sx={{ border: '1px solid black' }}>
-                        Transportation expenses
-                      </TableCell>
-                      {currentDocType === 'estimation' && (
-                        <TableCell sx={{ border: '1px solid black' }}></TableCell>
-                      )}
-                      {currentDocType !== 'challan' && (
-                        <>
-                          <TableCell sx={{ border: '1px solid black' }}></TableCell>
-                          <TableCell sx={{ border: '1px solid black' }}></TableCell>
-                          <TableCell sx={{ border: '1px solid black' }}></TableCell>
-                          <TableCell sx={{ border: '1px solid black' }}></TableCell>
-                          <TableCell sx={{ border: '1px solid black' }}></TableCell>
-                          <TableCell sx={{ border: '1px solid black' }}>
-                            {formData.transportExpenses.toFixed(2)}
-                          </TableCell>
-                        </>
-                      )}
-                      {(currentDocType === 'invoice' || currentDocType === 'estimation') && (
-                        <TableCell sx={{ border: '1px solid black' }}>
-                          18.0% {((formData.transportExpenses * 18) / 100).toFixed(2)} {(formData.transportExpenses + (formData.transportExpenses * 18) / 100).toFixed(2)}
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+           <TableContainer sx={{ mb: 2 }}>
+  <Table 
+    size="small" 
+    sx={{ 
+      border: '1px solid black',
+      width: '100%',
+      '@media print': {
+        fontSize: '0.7rem',
+        '& .MuiTableCell-root': {
+          padding: '2px 4px',
+          fontSize: '0.7rem',
+          lineHeight: '1.2'
+        }
+      }
+    }}
+  >
+    <TableHead>
+      <TableRow>
+        <TableCell sx={{ border: '1px solid black', width: '4%', textAlign: 'center' }}>
+          Sl.No.
+        </TableCell>
+        {currentDocType !== 'challan' && (
+          <TableCell sx={{ border: '1px solid black', width: '8%', textAlign: 'center' }}>
+            HSN CODE
+          </TableCell>
+        )}
+        <TableCell sx={{ border: '1px solid black', width: currentDocType === 'challan' ? '40%' : '30%' }}>
+          Description
+        </TableCell>
+        <TableCell sx={{ border: '1px solid black', width: '6%', textAlign: 'center' }}>W</TableCell>
+        <TableCell sx={{ border: '1px solid black', width: '6%', textAlign: 'center' }}>H</TableCell>
+        <TableCell sx={{ border: '1px solid black', width: '6%', textAlign: 'center' }}>Qty</TableCell>
+        {currentDocType !== 'challan' && (
+          <>
+            <TableCell sx={{ border: '1px solid black', width: '8%', textAlign: 'center' }}>Sft</TableCell>
+            <TableCell sx={{ border: '1px solid black', width: '8%', textAlign: 'center' }}>Rate</TableCell>
+            <TableCell sx={{ border: '1px solid black', width: '10%', textAlign: 'center' }}>Amount</TableCell>
+          </>
+        )}
+        {(currentDocType === 'invoice' || currentDocType === 'estimation') && (
+          <>
+            <TableCell sx={{ border: '1px solid black', width: '8%', textAlign: 'center', fontSize: '0.8rem' }}>
+              CGST+SGST
+            </TableCell>
+            <TableCell sx={{ border: '1px solid black', width: '10%', textAlign: 'center' }}>TOTAL</TableCell>
+          </>
+        )}
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {formData.items.map((item, index) => (
+        <TableRow key={index}>
+          <TableCell sx={{ border: '1px solid black', textAlign: 'center', fontSize: '0.8rem' }}>
+            {item.slNo}
+          </TableCell>
+          {currentDocType !== 'challan' && (
+            <TableCell sx={{ border: '1px solid black', textAlign: 'center', fontSize: '0.8rem' }}>
+              {item.hsnCode}
+            </TableCell>
+          )}
+          <TableCell sx={{ border: '1px solid black', fontSize: '0.8rem', wordBreak: 'break-word' }}>
+            {item.description}
+          </TableCell>
+          <TableCell sx={{ border: '1px solid black', textAlign: 'center', fontSize: '0.8rem' }}>
+            {item.width}
+          </TableCell>
+          <TableCell sx={{ border: '1px solid black', textAlign: 'center', fontSize: '0.8rem' }}>
+            {item.height}
+          </TableCell>
+          <TableCell sx={{ border: '1px solid black', textAlign: 'center', fontSize: '0.8rem' }}>
+            {item.qty}
+          </TableCell>
+          {currentDocType !== 'challan' && (
+            <>
+              <TableCell sx={{ border: '1px solid black', textAlign: 'right', fontSize: '0.8rem' }}>
+                {item.sft.toFixed(2)}
+              </TableCell>
+              <TableCell sx={{ border: '1px solid black', textAlign: 'right', fontSize: '0.8rem' }}>
+                {item.rate}
+              </TableCell>
+              <TableCell sx={{ border: '1px solid black', textAlign: 'right', fontSize: '0.8rem' }}>
+                {item.amount.toFixed(2)}
+              </TableCell>
+            </>
+          )}
+          {(currentDocType === 'invoice' || currentDocType === 'estimation') && (
+            <>
+              <TableCell sx={{ border: '1px solid black', textAlign: 'right', fontSize: '0.8rem' }}>
+                {item.cgstSgstAmount.toFixed(2)}
+              </TableCell>
+              <TableCell sx={{ border: '1px solid black', textAlign: 'right', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                {item.total.toFixed(2)}
+              </TableCell>
+            </>
+          )}
+        </TableRow>
+      ))}
+      
+      {/* Transport expenses row */}
+      {currentDocType !== 'challan' && formData.transportExpenses > 0 && (
+        <TableRow>
+          <TableCell sx={{ border: '1px solid black' }}></TableCell>
+          {currentDocType !== 'challan' && (
+            <TableCell sx={{ border: '1px solid black' }}></TableCell>
+          )}
+          <TableCell sx={{ border: '1px solid black', fontSize: '0.8rem' }}>
+            Transportation expenses
+          </TableCell>
+          <TableCell sx={{ border: '1px solid black' }}></TableCell>
+          <TableCell sx={{ border: '1px solid black' }}></TableCell>
+          <TableCell sx={{ border: '1px solid black' }}></TableCell>
+          {currentDocType !== 'challan' && (
+            <>
+              <TableCell sx={{ border: '1px solid black' }}></TableCell>
+              <TableCell sx={{ border: '1px solid black' }}></TableCell>
+              <TableCell sx={{ border: '1px solid black', textAlign: 'right', fontSize: '0.8rem' }}>
+                {formData.transportExpenses.toFixed(2)}
+              </TableCell>
+            </>
+          )}
+          {(currentDocType === 'invoice' || currentDocType === 'estimation') && (
+            <>
+              <TableCell sx={{ border: '1px solid black', textAlign: 'right', fontSize: '0.8rem' }}>
+                {((formData.transportExpenses * 18) / 100).toFixed(2)}
+              </TableCell>
+              <TableCell sx={{ border: '1px solid black', textAlign: 'right', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                {(formData.transportExpenses + (formData.transportExpenses * 18) / 100).toFixed(2)}
+              </TableCell>
+            </>
+          )}
+        </TableRow>
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
+
 
             {/* Footer Section */}
             {currentDocType !== 'challan' && (
