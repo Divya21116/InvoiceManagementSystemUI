@@ -1,0 +1,232 @@
+/* Add this to your custom.css file or in a <style> tag */
+
+@media print {
+  /* Reset all margins and padding for print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Page setup for A4 */
+  @page {
+    size: A4;
+    margin: 0.5in 0.3in 0.5in 0.3in; /* top right bottom left */
+  }
+
+  /* Hide non-printable elements */
+  .no-print,
+  .MuiDialog-paper > *:not([ref]),
+  .MuiDialogContent-root > *:not(.print-content) {
+    display: none !important;
+  }
+
+  /* Main print container */
+  .print-content {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  /* Company header */
+  .print-header {
+    text-align: center !important;
+    margin-bottom: 8px !important;
+    border-bottom: 2px solid black !important;
+    padding-bottom: 6px !important;
+  }
+
+  .print-header h4 {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    margin: 0 0 2px 0 !important;
+  }
+
+  .print-header .subtitle {
+    font-size: 11px !important;
+    margin: 0 0 2px 0 !important;
+  }
+
+  .print-header .contact-info {
+    font-size: 9px !important;
+    margin: 1px 0 !important;
+  }
+
+  .print-header .document-title {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    margin: 4px 0 0 0 !important;
+  }
+
+  /* Document info section */
+  .print-doc-info {
+    display: flex !important;
+    border-bottom: 1px solid black !important;
+    margin-bottom: 6px !important;
+  }
+
+  .print-doc-info .left-section,
+  .print-doc-info .right-section {
+    flex: 1 !important;
+    padding: 4px !important;
+    font-size: 9px !important;
+    line-height: 1.3 !important;
+  }
+
+  .print-doc-info .right-section {
+    border-left: 1px solid black !important;
+  }
+
+  /* Customer details section */
+  .print-customer-info {
+    display: flex !important;
+    border-bottom: 1px solid black !important;
+    margin-bottom: 6px !important;
+  }
+
+  .print-customer-info .customer-left,
+  .print-customer-info .customer-right {
+    flex: 1 !important;
+    padding: 4px !important;
+    font-size: 9px !important;
+    line-height: 1.3 !important;
+  }
+
+  .print-customer-info .customer-right {
+    border-left: 1px solid black !important;
+  }
+
+  /* Items table - This is the main fix */
+  .print-items-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 6px 0 !important;
+    table-layout: fixed !important; /* This ensures columns stay fixed width */
+  }
+
+  .print-items-table th,
+  .print-items-table td {
+    border: 1px solid black !important;
+    padding: 3px 2px !important;
+    font-size: 8px !important;
+    line-height: 1.1 !important;
+    text-align: left !important;
+    vertical-align: top !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .print-items-table th {
+    background-color: #f5f5f5 !important;
+    font-weight: bold !important;
+    text-align: center !important;
+  }
+
+  /* Specific column widths for better layout */
+  .col-sl { width: 6% !important; }
+  .col-hsn { width: 8% !important; }
+  .col-description { width: 30% !important; }
+  .col-store { width: 8% !important; }
+  .col-w { width: 6% !important; }
+  .col-h { width: 6% !important; }
+  .col-qty { width: 6% !important; }
+  .col-sft { width: 8% !important; }
+  .col-rate { width: 8% !important; }
+  .col-amount { width: 10% !important; }
+  .col-tax { width: 12% !important; }
+  .col-total { width: 10% !important; }
+
+  /* For challan specific columns */
+  .col-size { width: 20% !important; }
+  .col-qty-challan { width: 15% !important; }
+
+  /* Numeric columns alignment */
+  .print-items-table .numeric {
+    text-align: right !important;
+  }
+
+  /* Footer sections */
+  .print-footer {
+    display: flex !important;
+    margin-top: 8px !important;
+  }
+
+  .print-footer .footer-left,
+  .print-footer .footer-right {
+    flex: 1 !important;
+    padding: 6px !important;
+    font-size: 9px !important;
+    line-height: 1.3 !important;
+  }
+
+  .print-footer .footer-right {
+    border-left: 1px solid black !important;
+  }
+
+  /* Totals table in footer */
+  .print-totals-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .print-totals-table td {
+    border: none !important;
+    padding: 2px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .print-totals-table .total-border {
+    border-top: 2px solid black !important;
+    font-weight: bold !important;
+  }
+
+  /* Bank details */
+  .bank-details {
+    margin-top: 6px !important;
+    font-size: 8px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Terms and conditions */
+  .terms-conditions {
+    margin-top: 8px !important;
+    border-top: 1px solid black !important;
+    padding-top: 4px !important;
+    font-size: 8px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Signature section */
+  .signature-section {
+    margin-top: 8px !important;
+    text-align: right !important;
+    font-size: 9px !important;
+  }
+
+  /* Remove all box shadows and transform for print */
+  .MuiDialog-paper {
+    box-shadow: none !important;
+    transform: none !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Ensure content fits on page */
+  .print-content {
+    transform: scale(1) !important;
+    transform-origin: top left !important;
+  }
+
+  /* Hide scroll bars */
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+}
