@@ -11,7 +11,7 @@ import {
   Calculate as CalculatorIcon
 } from '@mui/icons-material';
 import companyIMage from '../assets/GR-Symbols-Logo-Transparent-Harizontal.png'
-import SignatureImage1 from '../assets/signature.png'
+import SignatureImage1 from '../assets/signature1.png'
 import {
   Grid,
   Paper,
@@ -53,9 +53,9 @@ const InvoiceSystem = () => {
   const companyData = {
     name: "GR SYMBOLS & DIGITALS",
     subtitle: "INDOOR&OUTDOOR ADVERTISING SIGNS",
-    address: "PLOT NO 12, VENKATRAO NAGAR COLONY",
-    location: "KUKATPALLY, Kukatpally, Hyderabad, Medchal Malkajgiri",
-    pincode: "Kukatpally HYD.500072",
+    address: "PLOT NO 12, VENKATRAO NAGAR COLONY,KUKATPALLY,Hyderabad, Medchal Malkajgiri-500072",
+    // location: "KUKATPALLY, Kukatpally, Hyderabad, Medchal Malkajgiri",
+    // pincode: "500072",
     phone: "9912514956, 8686058020",
     email: "info@grsymbols.com, grsymbolsdigitals2018@gmail.com",
     gstin: "36CJLPG9226N1ZL",
@@ -861,32 +861,78 @@ useEffect(() => {
           {/* Print Template */}
           <Box sx={{ border: '2px solid black', p: 2 }}>
             {/* Header */}
-            <Box sx={{ position: 'relative', textAlign: 'center', borderBottom: '2px solid black', pb: 2, mb: 2 }}>
+  <Box sx={{ borderBottom: '2px solid black', pb: 2, mb: 2 }}>
+  {/* Logo, Line, and Subtitle Row */}
+  <Box sx={{ 
+  display: 'flex', 
+  alignItems: 'flex-end', // Align to bottom so line aligns with logo bottom
+  mb: 2,
+  gap: 2
+}}>
+  {/* Logo */}
   <img 
     src={companyIMage} 
     alt='Company logo' 
     style={{
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      width: '120px',
-      height: '40px'
+      width: '200px',
+      height: '50px',
+      objectFit: 'contain'
     }}
   />
-  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-    {companyData.name}
-  </Typography>
-  <Typography variant="subtitle1">{companyData.subtitle}</Typography>
-  <Typography variant="body2">{companyData.address}</Typography>
-  <Typography variant="body2">{companyData.location}</Typography>
-  <Typography variant="body2">{companyData.pincode}</Typography>
-  <Typography variant="body2">PH: {companyData.phone}</Typography>
-  <Typography variant="body2">Email: {companyData.email}</Typography>
-  <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold' }}>
-    {currentDocType === 'invoice' && 'TAX INVOICE'}
-    {currentDocType === 'challan' && 'DELIVERY CHALLAN'}
-    {currentDocType === 'estimation' && 'ESTIMATION'}
-  </Typography>
+  
+  {/* Subtitle and Line Container */}
+  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+    {/* Subtitle above the line */}
+    <Typography variant="h6" sx={{ 
+      color: '#1976d2',
+      fontWeight: 'normal',
+      textAlign: 'right' // Align to right
+    }}>
+      {companyData.subtitle}
+    </Typography>
+    
+    {/* Line with gradient effect */}
+  <Box sx={{ 
+  height: '4px',
+  background: 'linear-gradient(90deg, #1976d2 0%, #db3f3fff 40%, #3fdb76ff 70%, #e3f664ff 100%)',
+  borderRadius: '2px',
+  position: 'relative',
+  '@media print': {
+    // Fallback for print - use solid color if gradient fails
+    background: '#1976d2',
+    // Or try to force the gradient
+    backgroundImage: 'linear-gradient(90deg, #1976d2 0%, #db3f3fff 40%, #3fdb76ff 70%, #e3f664ff 100%) !important',
+    '-webkit-print-color-adjust': 'exact' // Force colors in print
+  }
+}}>
+      {/* Optional: Add a dot/circle in the line */}
+      <Box sx={{
+        position: 'absolute',
+        right: '100px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        width: '8px',
+        height: '8px',
+        backgroundColor: '#1976d2',
+        borderRadius: '50%'
+      }} />
+    </Box>
+  </Box>
+</Box>
+  
+  {/* Company Details - Centered */}
+  <Box sx={{ textAlign: 'center' }}>
+    <Typography variant="body2">{companyData.address}</Typography>
+    <Typography variant="body2">{companyData.location}</Typography>
+    <Typography variant="body2">{companyData.pincode}</Typography>
+    <Typography variant="body2">PH: {companyData.phone}</Typography>
+    <Typography variant="body2">Email: {companyData.email}</Typography>
+    <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold' }}>
+      {currentDocType === 'invoice' && 'TAX INVOICE'}
+      {currentDocType === 'challan' && 'DELIVERY CHALLAN'}
+      {currentDocType === 'estimation' && 'ESTIMATION'}
+    </Typography>
+  </Box>
 </Box>
             {/* Document Info Row */}
             <Grid container sx={{ borderBottom: '1px solid black', mb: 2 }}>
@@ -1211,9 +1257,9 @@ useEffect(() => {
             {currentDocType === 'challan' && (
               <Box sx={{ textAlign: 'center', mt: 4 }}>
                 <Grid container spacing={4}>
-                  <Grid item xs={4}>
+                  {/* <Grid item xs={4}>
                     <Typography variant="body2">Transport</Typography>
-                  </Grid>
+                  </Grid> */}
                   {/* <Grid item xs={4}>
                     <Typography variant="body2">Total</Typography>
                   </Grid> */}
